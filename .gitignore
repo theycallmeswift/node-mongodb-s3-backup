@@ -1,0 +1,7 @@
+node_modules/
+*.sw[a-z]
+*.orig
+.DS_Store
+*.working
+config.json
+npm-debug.log

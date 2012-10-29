@@ -1,0 +1,24 @@
+{
+  "name": "mongodb_s3_backup",
+  "version": "0.0.0",
+  "description": "A tool to help backup your mongodb databases to s3.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "keywords": [
+    "Mongodb",
+    "S3",
+    "backup"
+  ],
+  "author": "Swift <theycallmeswift@gmail.com>",
+  "license": "Beerware",
+  "dependencies": {
+    "cli": "~0.4.4-2",
+    "knox": "~0.4.0",
+    "cli-color": "~0.2.1",
+    "async": "~0.1.22",
+    "cron": "~1.0.1"
+  }
+}
