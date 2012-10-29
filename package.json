@@ -4,7 +4,7 @@
   "description": "A tool to help backup your mongodb databases to s3.",
   "main": "index.js",
   "bin": {
-    "mongodb_s3_backup": "./bin/mongodb_s3_backup.js" 
+    "mongodb_s3_backup": "./bin/mongodb_s3_backup.js"
   },
   "preferGlobal": "true",
   "scripts": {
@@ -24,7 +24,8 @@
     "knox": "~0.4.0",
     "cli-color": "~0.2.1",
     "async": "~0.1.22",
-    "cron": "~1.0.1"
+    "cron": "~1.0.1",
+    "time": "~0.8.3"
   },
   "engines": {
     "node": ">=0.8"
