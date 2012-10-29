@@ -3,7 +3,12 @@
   "version": "0.0.2",
   "description": "A tool to help backup your mongodb databases to s3.",
   "main": "index.js",
+  "bin": {
+    "mongodb_s3_backup": "./bin/mongodb_s3_backup.js" 
+  },
+  "preferGlobal": "true",
   "scripts": {
+    "start": "node ./bin/mongodb_s3_backup.js ./config.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": "https://github.com/theycallmeswift/node-mongodb-s3-backup.git",
@@ -20,5 +25,8 @@
     "cli-color": "~0.2.1",
     "async": "~0.1.22",
     "cron": "~1.0.1"
+  },
+  "engines": {
+    "node": ">=0.8"
   }
 }

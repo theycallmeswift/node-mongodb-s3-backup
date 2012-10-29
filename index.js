@@ -226,7 +226,6 @@ function sync(mongodbConfig, s3Config) {
   ], function(err) {
     if(err) {
       log(err, 'error');
-      return process.exit(1);
     }
     return log('Successfully backed up ' + mongodbConfig.db);
   });
