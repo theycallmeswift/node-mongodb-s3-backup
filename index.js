@@ -165,7 +165,8 @@ function compressDirectory(directory, input, output, callback) {
 function sendToS3(options, directory, target, callback) {
   var knox = require('knox')
     , sourceFile = path.join(directory, target)
-    , s3client;
+    , s3client
+    , destination = options.destination || '/';
 
   callback = callback || function() { };
 
@@ -176,7 +177,7 @@ function sendToS3(options, directory, target, callback) {
   });
 
   log('Attemping to upload ' + target + ' to the ' + options.bucket + ' s3 bucket');
-  s3client.putFile(sourceFile, '/' + target,  function(err, res){
+  s3client.putFile(sourceFile, path.join(destination, target),  function(err, res){
     if(err) {
       return callback(err);
     }
