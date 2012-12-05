@@ -25,7 +25,8 @@ have the following format:
       "s3": {
         "key": "your_s3_key",
         "secret": "your_s3_bucket",
-        "bucket": "s3_bucket_to_upload_to"
+        "bucket": "s3_bucket_to_upload_to",
+        "destination": "/backups"
       }
     }
 
