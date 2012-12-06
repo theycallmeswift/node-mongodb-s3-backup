@@ -1,3 +1,5 @@
+'use strict';
+
 var exec = require('child_process').exec
   , spawn = require('child_process').spawn
   , path = require('path');
@@ -42,7 +44,8 @@ function getArchiveName(databaseName) {
     databaseName,
     date.getFullYear(),
     date.getMonth() + 1,
-    date.getDate()
+    date.getDate(),
+    date.getTime()
   ];
 
   return datestring.join('_') + '.tar.gz';
@@ -61,8 +64,9 @@ function removeRF(target, callback) {
   callback = callback || function() { };
 
   fs.exists(target, function(exists) {
-    if(!exists) return callback(null);
-
+		if (!exists) {
+			return callback(null);
+		}
     log("Removing " + target, 'warn');
     exec( 'rm -rf ' + target, callback);
   });
@@ -192,14 +196,13 @@ function sendToS3(options, directory, target, callback) {
       }
     });
 
-    res.on('end', function(chunk) {
-      if(res.statusCode !== 200) {
-        return callback(new Error('Expected a 200 response from S3, got ' + res.statusCode));
-      } else {
-        log('Successfully uploaded to s3');
-        return callback()
-      }
-    });
+		res.on('end', function(chunk) {
+			if (res.statusCode !== 200) {
+				return callback(new Error('Expected a 200 response from S3, got ' + res.statusCode));
+			}
+			log('Successfully uploaded to s3');
+			return callback();
+		});
   });
 }
 
