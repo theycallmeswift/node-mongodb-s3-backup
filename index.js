@@ -215,7 +215,7 @@ function sendToS3(options, directory, target, callback) {
  * @param mongoConfig   mongodb config [host, port, username, password, db]
  * @param s3Config      s3 config [key, secret, bucket]
  */
-function sync(mongodbConfig, s3Config) {
+function sync(mongodbConfig, s3Config, cb) {
   var tmpDir = path.join(require('os').tmpDir(), 'mongodb_s3_backup')
     , backupDir = path.join(tmpDir, mongodbConfig.db)
     , archiveName = getArchiveName(mongodbConfig.db)
@@ -232,6 +232,7 @@ function sync(mongodbConfig, s3Config) {
       log(err, 'error');
     }
     return log('Successfully backed up ' + mongodbConfig.db);
+    cb && cb();
   });
 }
 
