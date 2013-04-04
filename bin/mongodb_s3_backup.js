@@ -32,5 +32,7 @@ new cronJob('0 0 * * *', function(){
 util.log('[info] MongoDB S3 Backup Successfully scheduled');
 
 if(options.now) {
-  backup.sync(config.mongodb, config.s3);
+  backup.sync(config.mongodb, config.s3, function() {
+    process.exit();
+  });
 }
