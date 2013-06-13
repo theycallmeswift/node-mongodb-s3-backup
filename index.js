@@ -1,3 +1,5 @@
+'use strict';
+
 var exec = require('child_process').exec
   , spawn = require('child_process').spawn
   , path = require('path');
@@ -42,7 +44,8 @@ function getArchiveName(databaseName) {
     databaseName,
     date.getFullYear(),
     date.getMonth() + 1,
-    date.getDate()
+    date.getDate(),
+    date.getTime()
   ];
 
   return datestring.join('_') + '.tar.gz';
@@ -61,8 +64,9 @@ function removeRF(target, callback) {
   callback = callback || function() { };
 
   fs.exists(target, function(exists) {
-    if(!exists) return callback(null);
-
+    if (!exists) {
+      return callback(null);
+    }
     log("Removing " + target, 'warn');
     exec( 'rm -rf ' + target, callback);
   });
@@ -100,6 +104,10 @@ function mongoDump(options, directory, callback) {
   log('Starting mongodump of ' + options.db, 'info');
   mongodump = spawn('mongodump', mongoOptions);
 
+  mongodump.stdout.on('data', function (data) {
+    log(data);
+  });
+
   mongodump.stderr.on('data', function (data) {
     log(data, 'error');
   });
@@ -120,7 +128,7 @@ function mongoDump(options, directory, callback) {
  * Compressed the directory so we can upload it to S3.
  *
  * @param directory  current working directory
- * @param output     path to input file or directory
+ * @param input     path to input file or directory
  * @param output     path to output archive
  * @param callback   callback(err)
  */
@@ -159,13 +167,15 @@ function compressDirectory(directory, input, output, callback) {
  * Sends a file or directory to S3.
  *
  * @param options   s3 options [key, secret, bucket]
+ * @param directory directory containing file or directory to upload
  * @param target    file or directory to upload
  * @param callback  callback(err)
  */
 function sendToS3(options, directory, target, callback) {
   var knox = require('knox')
     , sourceFile = path.join(directory, target)
-    , s3client;
+    , s3client
+    , destination = options.destination || '/';
 
   callback = callback || function() { };
 
@@ -176,7 +186,7 @@ function sendToS3(options, directory, target, callback) {
   });
 
   log('Attemping to upload ' + target + ' to the ' + options.bucket + ' s3 bucket');
-  s3client.putFile(sourceFile, '/' + target,  function(err, res){
+  s3client.putFile(sourceFile, path.join(destination, target),  function(err, res){
     if(err) {
       return callback(err);
     }
@@ -192,12 +202,11 @@ function sendToS3(options, directory, target, callback) {
     });
 
     res.on('end', function(chunk) {
-      if(res.statusCode !== 200) {
+      if (res.statusCode !== 200) {
         return callback(new Error('Expected a 200 response from S3, got ' + res.statusCode));
-      } else {
-        log('Successfully uploaded to s3');
-        return callback()
       }
+      log('Successfully uploaded to s3');
+      return callback();
     });
   });
 }
@@ -208,14 +217,17 @@ function sendToS3(options, directory, target, callback) {
  * Performs a mongodump on a specified database, gzips the data,
  * and uploads it to s3.
  *
- * @param mongoConfig   mongodb config [host, port, username, password, db]
- * @param s3Config      s3 config [key, secret, bucket]
+ * @param mongodbConfig   mongodb config [host, port, username, password, db]
+ * @param s3Config        s3 config [key, secret, bucket]
+ * @param callback        callback(err)
  */
-function sync(mongodbConfig, s3Config) {
+function sync(mongodbConfig, s3Config, callback) {
   var tmpDir = path.join(require('os').tmpDir(), 'mongodb_s3_backup')
     , backupDir = path.join(tmpDir, mongodbConfig.db)
     , archiveName = getArchiveName(mongodbConfig.db)
     , async = require('async');
+
+  callback = callback || function() { };
 
   async.series([
     async.apply(removeRF, backupDir),
@@ -226,9 +238,11 @@ function sync(mongodbConfig, s3Config) {
   ], function(err) {
     if(err) {
       log(err, 'error');
+    } else {
+      log('Successfully backed up ' + mongodbConfig.db);
     }
-    return log('Successfully backed up ' + mongodbConfig.db);
+    return callback(err);
   });
 }
 
-module.exports = { sync: sync };
+module.exports = { sync: sync, log: log };
