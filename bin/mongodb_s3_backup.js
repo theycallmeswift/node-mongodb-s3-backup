@@ -8,7 +8,7 @@ var cli = require('cli')
   , backup = require('../')
   , cronJob = require('cron').CronJob
   , pkg = require('../package.json')
-  , options, config;
+  , options, config, crontab, timezone;
 
 cli
   .enable('version')
@@ -24,11 +24,19 @@ if(cli.args.length !== 1) {
 }
 
 config = require(path.resolve(process.cwd(), cli.args[0]));
+if(config.cron && config.cron.crontab) {
+  crontab = config.cron.crontab;
+} else {
+  var time_toks = (config.cron && config.cron.time) ? config.cron.time.split(':') : [0,0];
+  var hour = time_toks[0], minute = time_toks[1];
+  crontab = util.format('%d %d * * *', minute, hour);
+}
+timezone = (config.cron && config.cron.crontab) ? config.cron.crontab : "America/New_York";
 
 util.log('[info] MongoDB S3 Backup Successfully loaded');
-new cronJob('0 0 * * *', function(){
+new cronJob(crontab, function(){
   backup.sync(config.mongodb, config.s3);
-}, null, true, "America/New_York");
+}, null, true, timezone);
 util.log('[info] MongoDB S3 Backup Successfully scheduled');
 
 if(options.now) {

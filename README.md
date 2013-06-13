@@ -26,8 +26,15 @@ have the following format:
         "key": "your_s3_key",
         "secret": "your_s3_bucket",
         "bucket": "s3_bucket_to_upload_to"
+      },
+      "cron": {
+        "time": "00:00",
+        "timezone": "America/New_York"
       }
     }
+
+You may optionally substitute the cron "time" field with an explicit "crontab"
+of the standard format `00 00 * * *`.
 
 ## Running
 
