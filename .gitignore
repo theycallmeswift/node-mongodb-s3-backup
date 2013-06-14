@@ -5,3 +5,4 @@ node_modules/
 *.working
 config.json
 npm-debug.log
+*.project

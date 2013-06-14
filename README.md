@@ -1,8 +1,8 @@
 # Node MongoDB / S3 Backup
 
 This is a package that makes backing up your mongo databases to S3 simple.
-The binary file is a node cronjob that runs at midnight every day and backs up
-the database specified in the config file.
+The binary file is a node cronjob that runs at the specified time every day
+and backs up the database specified in the config file.
 
 ## Installation
 
@@ -25,7 +25,8 @@ have the following format:
       "s3": {
         "key": "your_s3_key",
         "secret": "your_s3_bucket",
-        "bucket": "s3_bucket_to_upload_to"
+        "bucket": "s3_bucket_to_upload_to",
+        "destination": "/backups"
       },
       "cron": {
         "time": "00:00",

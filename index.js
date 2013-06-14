@@ -1,3 +1,5 @@
+'use strict';
+
 var exec = require('child_process').exec
   , spawn = require('child_process').spawn
   , path = require('path');
@@ -42,7 +44,8 @@ function getArchiveName(databaseName) {
     databaseName,
     date.getFullYear(),
     date.getMonth() + 1,
-    date.getDate()
+    date.getDate(),
+    date.getTime()
   ];
 
   return datestring.join('_') + '.tar.gz';
@@ -61,8 +64,9 @@ function removeRF(target, callback) {
   callback = callback || function() { };
 
   fs.exists(target, function(exists) {
-    if(!exists) return callback(null);
-
+		if (!exists) {
+			return callback(null);
+		}
     log("Removing " + target, 'warn');
     exec( 'rm -rf ' + target, callback);
   });
@@ -165,7 +169,8 @@ function compressDirectory(directory, input, output, callback) {
 function sendToS3(options, directory, target, callback) {
   var knox = require('knox')
     , sourceFile = path.join(directory, target)
-    , s3client;
+    , s3client
+    , destination = options.destination || '/';
 
   callback = callback || function() { };
 
@@ -176,7 +181,7 @@ function sendToS3(options, directory, target, callback) {
   });
 
   log('Attemping to upload ' + target + ' to the ' + options.bucket + ' s3 bucket');
-  s3client.putFile(sourceFile, '/' + target,  function(err, res){
+  s3client.putFile(sourceFile, path.join(destination, target),  function(err, res){
     if(err) {
       return callback(err);
     }
@@ -191,14 +196,13 @@ function sendToS3(options, directory, target, callback) {
       }
     });
 
-    res.on('end', function(chunk) {
-      if(res.statusCode !== 200) {
-        return callback(new Error('Expected a 200 response from S3, got ' + res.statusCode));
-      } else {
-        log('Successfully uploaded to s3');
-        return callback()
-      }
-    });
+		res.on('end', function(chunk) {
+			if (res.statusCode !== 200) {
+				return callback(new Error('Expected a 200 response from S3, got ' + res.statusCode));
+			}
+			log('Successfully uploaded to s3');
+			return callback();
+		});
   });
 }
 
@@ -211,7 +215,7 @@ function sendToS3(options, directory, target, callback) {
  * @param mongoConfig   mongodb config [host, port, username, password, db]
  * @param s3Config      s3 config [key, secret, bucket]
  */
-function sync(mongodbConfig, s3Config) {
+function sync(mongodbConfig, s3Config, cb) {
   var tmpDir = path.join(require('os').tmpDir(), 'mongodb_s3_backup')
     , backupDir = path.join(tmpDir, mongodbConfig.db)
     , archiveName = getArchiveName(mongodbConfig.db)
@@ -228,6 +232,7 @@ function sync(mongodbConfig, s3Config) {
       log(err, 'error');
     }
     return log('Successfully backed up ' + mongodbConfig.db);
+    cb && cb();
   });
 }
 
