@@ -11,8 +11,8 @@ and backs up the database specified in the config file.
 ## Configuration
 
 To configure the backup, you need to pass the binary a JSON configuration file.
-There is a sample `config.json` file supplied in the package. The file should 
-have the following format:
+There is a sample configuration file supplied in the package (`config.sample.json`).
+The file should have the following format:
 
     {
       "mongodb": {
@@ -24,9 +24,9 @@ have the following format:
       },
       "s3": {
         "key": "your_s3_key",
-        "secret": "your_s3_bucket",
+        "secret": "your_s3_secret",
         "bucket": "s3_bucket_to_upload_to",
-        "destination": "/backups"
+        "destination": "/"
       },
       "cron": {
         "time": "00:00",

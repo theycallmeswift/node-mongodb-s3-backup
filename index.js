@@ -64,9 +64,9 @@ function removeRF(target, callback) {
   callback = callback || function() { };
 
   fs.exists(target, function(exists) {
-		if (!exists) {
-			return callback(null);
-		}
+    if (!exists) {
+      return callback(null);
+    }
     log("Removing " + target, 'warn');
     exec( 'rm -rf ' + target, callback);
   });
@@ -201,13 +201,13 @@ function sendToS3(options, directory, target, callback) {
       }
     });
 
-		res.on('end', function(chunk) {
-			if (res.statusCode !== 200) {
-				return callback(new Error('Expected a 200 response from S3, got ' + res.statusCode));
-			}
-			log('Successfully uploaded to s3');
-			return callback();
-		});
+    res.on('end', function(chunk) {
+      if (res.statusCode !== 200) {
+        return callback(new Error('Expected a 200 response from S3, got ' + res.statusCode));
+      }
+      log('Successfully uploaded to s3');
+      return callback();
+    });
   });
 }
 

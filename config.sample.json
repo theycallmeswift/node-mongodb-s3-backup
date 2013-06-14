@@ -1,0 +1,20 @@
+{
+  "mongodb": {
+    "host": "localhost",
+    "port": 27017,
+    "username": false,
+    "password": false,
+    "db": "database_to_backup"
+  },
+  "s3": {
+    "key": "your_s3_key",
+    "secret": "your_s3_secret",
+    "bucket": "s3_bucket_to_upload_to",
+    "destination": "/"
+  },
+  "cron": {
+    "time": "00:00",
+    "timezone": "America/New_York"
+  }
+}
+

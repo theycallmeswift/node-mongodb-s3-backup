@@ -8,7 +8,10 @@ var cli = require('cli')
   , backup = require('../')
   , cronJob = require('cron').CronJob
   , pkg = require('../package.json')
-  , options, config, crontab, timezone;
+  , crontab = "0 0 * * *"
+  , timezone = "America/New_York"
+  , time = [0, 0]
+  , options, configPath, config;
 
 cli
   .enable('version')
@@ -23,24 +26,34 @@ if(cli.args.length !== 1) {
   return cli.getUsage();
 }
 
-config = require(path.resolve(process.cwd(), cli.args[0]));
-if(config.cron && config.cron.crontab) {
-  crontab = config.cron.crontab;
-} else {
-  var time_toks = (config.cron && config.cron.time) ? config.cron.time.split(':') : [0,0];
-  var hour = time_toks[0], minute = time_toks[1];
-  crontab = util.format('%d %d * * *', minute, hour);
-}
-timezone = (config.cron && config.cron.timezone) ? config.cron.timezone : "America/New_York";
+/* Configuration */
 
-backup.log('MongoDB S3 Backup Successfully loaded');
-new cronJob(crontab, function(){
-  backup.sync(config.mongodb, config.s3);
-}, null, true, timezone);
-backup.log('MongoDB S3 Backup Successfully scheduled');
+configPath = path.resolve(process.cwd(), cli.args[0]);
+backup.log('Loading config file (' + configPath + ')');
+config = require(configPath);
 
 if(options.now) {
   backup.sync(config.mongodb, config.s3, function(err) {
-    process.exit(err ? 127 : 0);
+    process.exit(err ? 1 : 0);
   });
+} else {
+  // If the user overrides the default cron behavior
+  if(config.cron) {
+    if(config.cron.crontab) {
+      crontab = config.cron.crontab
+    } else if(config.cron.time) {
+      time = config.cron.time.split(':')
+      crontab = util.format('%d %d * * *', time[0], time[1]);
+    }
+
+    if(config.cron.timezone) {
+      timezone = config.cron.timezone;
+      backup.log('Overriding default timezone with "' + timezone + '"');
+    }
+  }
+
+  new cronJob(crontab, function(){
+    backup.sync(config.mongodb, config.s3);
+  }, null, true, timezone);
+  backup.log('MongoDB S3 Backup Successfully scheduled (' + crontab + ')');
 }
