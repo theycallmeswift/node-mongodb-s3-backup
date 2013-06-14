@@ -33,14 +33,14 @@ if(config.cron && config.cron.crontab) {
 }
 timezone = (config.cron && config.cron.crontab) ? config.cron.crontab : "America/New_York";
 
-util.log('[info] MongoDB S3 Backup Successfully loaded');
+backup.log('MongoDB S3 Backup Successfully loaded');
 new cronJob(crontab, function(){
   backup.sync(config.mongodb, config.s3);
 }, null, true, timezone);
-util.log('[info] MongoDB S3 Backup Successfully scheduled');
+backup.log('MongoDB S3 Backup Successfully scheduled');
 
 if(options.now) {
-  backup.sync(config.mongodb, config.s3, function() {
-    process.exit();
+  backup.sync(config.mongodb, config.s3, function(err) {
+    process.exit(err ? 127 : 0);
   });
 }
