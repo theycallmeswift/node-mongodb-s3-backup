@@ -29,17 +29,24 @@ The file should have the following format:
         "destination": "/"
       },
       "cron": {
-        "time": "00:00",
-        "timezone": "America/New_York"
+        "time": "11:59",
       }
     }
 
 You may optionally substitute the cron "time" field with an explicit "crontab"
 of the standard format `00 00 * * *`.
 
+### Timezones
+
 The optional "timezone" allows you to specify timezone-relative time regardless
-of local timezone on the host machine. You must first `npm install time` to use
-"timezone" specification.
+of local timezone on the host machine. 
+
+      "cron": {
+        "time": "00:00",
+        "timezone": "America/New_York"
+      }
+
+You must first `npm install time` to use "timezone" specification.
 
 ## Running
 

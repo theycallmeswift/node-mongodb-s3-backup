@@ -47,6 +47,14 @@ if(options.now) {
     }
 
     if(config.cron.timezone) {
+      try {
+        require('time'); // Make sure the user has time installed
+      } catch(e) {
+        backup.log(e, "error");
+        backup.log("Module 'time' is not installed by default, install it with `npm install time`", "error");
+        process.exit(1);
+      }
+
       timezone = config.cron.timezone;
       backup.log('Overriding default timezone with "' + timezone + '"');
     }
