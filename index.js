@@ -167,6 +167,7 @@ function compressDirectory(directory, input, output, callback) {
  * Sends a file or directory to S3.
  *
  * @param options   s3 options [key, secret, bucket]
+ * @param directory directory containing file or directory to upload
  * @param target    file or directory to upload
  * @param callback  callback(err)
  */

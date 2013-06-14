@@ -31,7 +31,7 @@ if(config.cron && config.cron.crontab) {
   var hour = time_toks[0], minute = time_toks[1];
   crontab = util.format('%d %d * * *', minute, hour);
 }
-timezone = (config.cron && config.cron.crontab) ? config.cron.crontab : "America/New_York";
+timezone = (config.cron && config.cron.timezone) ? config.cron.timezone : "America/New_York";
 
 backup.log('MongoDB S3 Backup Successfully loaded');
 new cronJob(crontab, function(){
