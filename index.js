@@ -104,6 +104,10 @@ function mongoDump(options, directory, callback) {
   log('Starting mongodump of ' + options.db, 'info');
   mongodump = spawn('mongodump', mongoOptions);
 
+  mongodump.stdout.on('data', function (data) {
+    log(data);
+  });
+
   mongodump.stderr.on('data', function (data) {
     log(data, 'error');
   });
@@ -124,7 +128,7 @@ function mongoDump(options, directory, callback) {
  * Compressed the directory so we can upload it to S3.
  *
  * @param directory  current working directory
- * @param output     path to input file or directory
+ * @param input     path to input file or directory
  * @param output     path to output archive
  * @param callback   callback(err)
  */
@@ -212,14 +216,17 @@ function sendToS3(options, directory, target, callback) {
  * Performs a mongodump on a specified database, gzips the data,
  * and uploads it to s3.
  *
- * @param mongoConfig   mongodb config [host, port, username, password, db]
- * @param s3Config      s3 config [key, secret, bucket]
+ * @param mongodbConfig   mongodb config [host, port, username, password, db]
+ * @param s3Config        s3 config [key, secret, bucket]
+ * @param callback        callback(err)
  */
-function sync(mongodbConfig, s3Config, cb) {
+function sync(mongodbConfig, s3Config, callback) {
   var tmpDir = path.join(require('os').tmpDir(), 'mongodb_s3_backup')
     , backupDir = path.join(tmpDir, mongodbConfig.db)
     , archiveName = getArchiveName(mongodbConfig.db)
     , async = require('async');
+
+  callback = callback || function() { };
 
   async.series([
     async.apply(removeRF, backupDir),
@@ -230,10 +237,11 @@ function sync(mongodbConfig, s3Config, cb) {
   ], function(err) {
     if(err) {
       log(err, 'error');
+    } else {
+      log('Successfully backed up ' + mongodbConfig.db);
     }
-    return log('Successfully backed up ' + mongodbConfig.db);
-    cb && cb();
+    return callback(err);
   });
 }
 
-module.exports = { sync: sync };
+module.exports = { sync: sync, log: log };

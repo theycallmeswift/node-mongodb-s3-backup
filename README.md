@@ -39,4 +39,10 @@ of the standard format `00 00 * * *`.
 
 ## Running
 
+To start a long-running process with scheduled cron job:
+
     mongodb_s3_backup <path to config file>
+
+To execute a backup immediately and exit:
+
+    mongodb_s3_backup -n <path to config file>
