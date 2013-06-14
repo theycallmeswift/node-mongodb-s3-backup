@@ -38,7 +38,8 @@ You may optionally substitute the cron "time" field with an explicit "crontab"
 of the standard format `00 00 * * *`.
 
 The optional "timezone" allows you to specify timezone-relative time regardless
-of local timezone on the host machine.
+of local timezone on the host machine. You must first `npm install time` to use
+"timezone" specification.
 
 ## Running
 
