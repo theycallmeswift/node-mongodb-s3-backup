@@ -33,8 +33,17 @@ The file should have the following format:
       }
     }
 
+### Crontabs
+
 You may optionally substitute the cron "time" field with an explicit "crontab"
-of the standard format `00 00 * * *`.
+of the standard format `0 0 * * *`.
+
+      "cron": {
+        "crontab": "0 0 * * *"
+      }
+
+*Note*: The version of cron that we run supports a sixth digit (which is in seconds) if
+you need it.
 
 ### Timezones
 
