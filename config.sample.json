@@ -10,7 +10,8 @@
     "key": "your_s3_key",
     "secret": "your_s3_secret",
     "bucket": "s3_bucket_to_upload_to",
-    "destination": "/"
+    "destination": "/",
+    "encrypt": true
   },
   "cron": {
     "time": "00:00"

@@ -26,7 +26,8 @@ The file should have the following format:
         "key": "your_s3_key",
         "secret": "your_s3_secret",
         "bucket": "s3_bucket_to_upload_to",
-        "destination": "/"
+        "destination": "/",
+        "encrypt": true
       },
       "cron": {
         "time": "11:59",
@@ -48,7 +49,7 @@ you need it.
 ### Timezones
 
 The optional "timezone" allows you to specify timezone-relative time regardless
-of local timezone on the host machine. 
+of local timezone on the host machine.
 
       "cron": {
         "time": "00:00",
