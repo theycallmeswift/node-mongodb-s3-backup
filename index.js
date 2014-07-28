@@ -241,7 +241,13 @@ function sync(mongodbConfig, s3Config, callback) {
     } else {
       log('Successfully backed up ' + mongodbConfig.db);
     }
-    return callback(err);
+    // remove folders even if there was an error
+    async.series([
+      async.apply(removeRF, backupDir),
+      async.apply(removeRF, path.join(tmpDir, archiveName))
+    ], function() {
+      return callback(err);
+    });
   });
 }
 
