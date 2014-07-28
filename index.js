@@ -175,7 +175,8 @@ function sendToS3(options, directory, target, callback) {
   var knox = require('knox')
     , sourceFile = path.join(directory, target)
     , s3client
-    , destination = options.destination || '/';
+    , destination = options.destination || '/'
+    , headers = {};
 
   callback = callback || function() { };
 
@@ -185,8 +186,11 @@ function sendToS3(options, directory, target, callback) {
     bucket: options.bucket
   });
 
+  if (options.encrypt)
+    headers = {"x-amz-server-side-encryption": "AES256"}
+
   log('Attemping to upload ' + target + ' to the ' + options.bucket + ' s3 bucket');
-  s3client.putFile(sourceFile, path.join(destination, target),  function(err, res){
+  s3client.putFile(sourceFile, path.join(destination, target), headers, function(err, res){
     if(err) {
       return callback(err);
     }
