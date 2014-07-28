@@ -2,7 +2,9 @@
 
 var exec = require('child_process').exec
   , spawn = require('child_process').spawn
-  , path = require('path');
+  , path = require('path')
+  , domain = require('domain')
+  , d = domain.create();
 
 /**
  * log
@@ -229,30 +231,40 @@ function sync(mongodbConfig, s3Config, callback) {
   var tmpDir = path.join(require('os').tmpDir(), 'mongodb_s3_backup')
     , backupDir = path.join(tmpDir, mongodbConfig.db)
     , archiveName = getArchiveName(mongodbConfig.db)
-    , async = require('async');
+    , async = require('async')
+    , tmpDirCleanupFns;
 
   callback = callback || function() { };
 
-  async.series([
+  tmpDirCleanupFns = [
     async.apply(removeRF, backupDir),
-    async.apply(removeRF, path.join(tmpDir, archiveName)),
+    async.apply(removeRF, path.join(tmpDir, archiveName))
+  ];
+
+  async.series(tmpDirCleanupFns.concat([
     async.apply(mongoDump, mongodbConfig, tmpDir),
     async.apply(compressDirectory, tmpDir, mongodbConfig.db, archiveName),
-    async.apply(sendToS3, s3Config, tmpDir, archiveName)
-  ], function(err) {
+    d.bind(async.apply(sendToS3, s3Config, tmpDir, archiveName)) // this function sometimes throws EPIPE errors
+  ]), function(err) {
     if(err) {
       log(err, 'error');
     } else {
       log('Successfully backed up ' + mongodbConfig.db);
     }
-    // remove folders even if there was an error
-    async.series([
-      async.apply(removeRF, backupDir),
-      async.apply(removeRF, path.join(tmpDir, archiveName))
-    ], function() {
+    // cleanup folders
+    async.series(tmpDirCleanupFns, function() {
       return callback(err);
     });
   });
+
+  // this cleans up folders in case of EPIPE error from AWS connection
+  d.on('error', function(err) {
+      d.exit()
+      async.series(tmpDirCleanupFns, function() {
+        throw(err);
+      });
+  });
+
 }
 
 module.exports = { sync: sync, log: log };
