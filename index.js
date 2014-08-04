@@ -69,7 +69,7 @@ function removeRF(target, callback) {
     if (!exists) {
       return callback(null);
     }
-    log("Removing " + target, 'warn');
+    log("Removing " + target, 'info');
     exec( 'rm -rf ' + target, callback);
   });
 }
