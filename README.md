@@ -34,6 +34,8 @@ The file should have the following format:
       }
     }
 
+All options in the "s3" object, except for desination, will be directly passed to knox, therefore, you can include any of the options listed [in the knox documentation](https://github.com/LearnBoost/knox#client-creation-options "Knox README").
+
 ### Crontabs
 
 You may optionally substitute the cron "time" field with an explicit "crontab"

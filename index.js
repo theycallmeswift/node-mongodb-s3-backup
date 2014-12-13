@@ -182,11 +182,9 @@ function sendToS3(options, directory, target, callback) {
 
   callback = callback || function() { };
 
-  s3client = knox.createClient({
-    key: options.key,
-    secret: options.secret,
-    bucket: options.bucket
-  });
+  // Deleting destination because it's not an explicitly named knox option
+  delete options.destination;
+  s3client = knox.createClient(options);
 
   if (options.encrypt)
     headers = {"x-amz-server-side-encryption": "AES256"}
