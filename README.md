@@ -28,7 +28,7 @@ The file should have the following format:
         "bucket": "s3_bucket_to_upload_to",
         "destination": "/",
         "encrypt": true,
-	"region": "s3_region_to_use"
+        "region": "s3_region_to_use"
       },
       "cron": {
         "time": "11:59",
