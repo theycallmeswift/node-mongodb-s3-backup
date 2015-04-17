@@ -9,7 +9,7 @@ var cli = require('cli')
   , cronJob = require('cron').CronJob
   , pkg = require('../package.json')
   , crontab = "0 0 * * *"
-  , timezone = "America/New_York"
+  , timezone = "UTC"
   , time = [0, 0]
   , options, configPath, config;
 
