@@ -20,11 +20,12 @@
   "author": "Swift <theycallmeswift@gmail.com>",
   "license": "Beerware",
   "dependencies": {
-    "cli": "~0.4.4-2",
-    "knox": "~0.8.0",
-    "cli-color": "~0.2.1",
     "async": "~0.1.22",
-    "cron": "~1.0.1"
+    "cli": "~0.4.4-2",
+    "cli-color": "~0.2.1",
+    "cron": "~1.0.1",
+    "knox": "~0.8.0",
+    "time": "^0.11.2"
   },
   "engines": {
     "node": ">=0.8"
