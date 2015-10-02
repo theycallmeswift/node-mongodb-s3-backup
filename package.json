@@ -1,6 +1,6 @@
 {
   "name": "mongodb_s3_backup",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A tool to help backup your mongodb databases to s3.",
   "main": "index.js",
   "bin": {
