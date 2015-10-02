@@ -43,7 +43,7 @@ if(options.now) {
       crontab = config.cron.crontab
     } else if(config.cron.time) {
       time = config.cron.time.split(':')
-      crontab = util.format('%d %d * * *', time[0], time[1]);
+      crontab = util.format('%d %d * * *', time[1], time[0]);
     }
 
     if(config.cron.timezone) {
